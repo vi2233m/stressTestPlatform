@@ -31,6 +31,11 @@ import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.threads.RemoteThreadsListenerTestElement;
 import org.apache.jmeter.threads.ThreadGroup;
 import org.apache.jorphan.collections.HashTree;
+import org.apache.sis.util.Static;
+import org.dom4j.*;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -71,6 +73,9 @@ public class StressTestFileServiceImpl implements StressTestFileService {
 
     @Autowired
     private StressTestUtils stressTestUtils;
+
+    @Autowired
+    private StressTestFileConfEntity stressTestFileConfEntity;
 
     private static final String JAVA_CLASS_PATH = "java.class.path";
     private static final String CLASSPATH_SEPARATOR = File.pathSeparator;
@@ -975,4 +980,87 @@ public class StressTestFileServiceImpl implements StressTestFileService {
         }
         return resultMap;
     }
+
+    /**
+     * 获取 jmeter脚本中线程组设置的运行参数，如并发数，迭代次数等.
+     * @param filedId
+     * @return
+     */
+    @Override
+    public StressTestFileConfEntity getJmeterRunParams(Long filedId){
+
+        // http://www.51gjie.com/java/748.html
+        Document doc = null;
+        String filePath = getFilePath( queryObject(filedId));
+        System.out.println("filePath: " + filePath);
+        try {
+            doc = new SAXReader().read(new File(filePath));
+        } catch (DocumentException e) {
+            logger.error("读取jmeter脚本文件失败！", e.getStackTrace());
+        }
+        stressTestFileConfEntity.setFileId(filedId);
+        stressTestFileConfEntity.setOnSampleError(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.on_sample_error']")).getStringValue());
+        stressTestFileConfEntity.setContinueForever(((Element) doc.selectSingleNode("//*[@name='LoopController.continue_forever']")).getStringValue());
+        stressTestFileConfEntity.setLoops(((Element) doc.selectSingleNode("//*[@name='LoopController.loops']")).getStringValue());
+        stressTestFileConfEntity.setNumThreads(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.num_threads']")).getStringValue());
+        stressTestFileConfEntity.setRampTime(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.ramp_time']")).getStringValue());
+        stressTestFileConfEntity.setScheduler(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.scheduler']")).getStringValue());
+        stressTestFileConfEntity.setDuration(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.duration']")).getStringValue());
+        stressTestFileConfEntity.setDelay(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.delay']")).getStringValue());
+
+        return stressTestFileConfEntity;
+    }
+
+    /**
+     *  更新jmeter脚本并发数
+     * @param StressTestFileConf
+     */
+    @Override
+    public void UpdateJmeterRunParams(StressTestFileConfEntity StressTestFileConf){
+
+        //http://www.51gjie.com/java/745.html
+        Document document = null;
+        String filePath = getFilePath( queryObject(StressTestFileConf.getFileId()));
+        System.out.println("filePath: " + filePath);
+        try {
+            document = new SAXReader().read(new File(filePath));
+        } catch (DocumentException e) {
+            logger.error("打开jmeter脚本文件失败！", e.getStackTrace());
+        }
+        //读取并修改
+        if(StressTestFileConf.getOnSampleError() != null)
+            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.on_sample_error']")).setText(StressTestFileConf.getOnSampleError());
+        if(StressTestFileConf.getNumThreads() != null)
+            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.num_threads']")).setText(StressTestFileConf.getNumThreads());
+        if(StressTestFileConf.getRampTime() != null)
+            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.ramp_time']")).setText(StressTestFileConf.getRampTime());
+        if(StressTestFileConf.getContinueForever() != null)
+            ((Element) document.selectSingleNode("//*[@name='LoopController.continue_forever']")).setText(StressTestFileConf.getContinueForever());
+        if(StressTestFileConf.getLoops() != null)
+            ((Element) document.selectSingleNode("//*[@name='LoopController.loops']")).setText(StressTestFileConf.getLoops());
+        if(StressTestFileConf.getScheduler() != null)
+            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.scheduler']")).setText(StressTestFileConf.getScheduler());
+        if(StressTestFileConf.getDuration() != null)
+            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.duration']")).setText(StressTestFileConf.getDuration());
+        if(StressTestFileConf.getDelay() != null)
+            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.delay']")).setText(StressTestFileConf.getDelay());
+        //保存
+        OutputStream os = null;
+        XMLWriter writer =null;
+        try {
+            os = new FileOutputStream(filePath);
+            writer = new XMLWriter(os,OutputFormat.createPrettyPrint());
+            writer.write(document);
+        } catch (Exception e) {
+            logger.error("更新jmeter脚本文件失败！", e.getStackTrace());
+        }finally {
+            try {
+                writer.close();
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

@@ -57,7 +57,7 @@ $(function () {
             {
                 label: '调试',
                 name: 'debugStatus',
-                width: 40,
+                width: 30,
                 sortable: false,
                 formatter: function (value, options, row) {
                     if (!(getExtension(row.originName) && /^(jmx)$/.test(getExtension(row.originName).toLowerCase()))) {
@@ -71,7 +71,7 @@ $(function () {
                 }
             },
             {
-                label: '状态', name: 'status', width: 45, formatter: function (value, options, row) {
+                label: '状态', name: 'status', width: 40, formatter: function (value, options, row) {
                     if (value === 0) {
                         return '<span class="label label-info">创建成功</span>';
                     } else if (value === 1) {
@@ -87,8 +87,9 @@ $(function () {
                 }
             },
             {
-                label: '执行操作', name: '', width: 95, sortable: false, formatter: function (value, options, row) {
+                label: '执行操作', name: '', width: 115, sortable: false, formatter: function (value, options, row) {
                     var btn = '';
+                    // var editBtn = '';
                     if (!(getExtension(row.originName) && /^(jmx)$/.test(getExtension(row.originName).toLowerCase()))) {
                         btn = "<a href='#' class='btn btn-primary' onclick='synchronizeFile(" + row.fileId + ")' ><i class='fa fa-arrow-circle-right'></i>&nbsp;同步文件</a>";
                     } else {
@@ -100,8 +101,9 @@ $(function () {
                     }
                     // var stopBtn = "<a href='#' class='btn btn-primary' onclick='stop(" + row.fileId + ")' ><i class='fa fa-stop'></i>&nbsp;停止</a>";
                     // var stopNowBtn = "<a href='#' class='btn btn-primary' onclick='stopNow(" + row.fileId + ")' ><i class='fa fa-times-circle'></i>&nbsp;强制停止</a>";
+                    // var editBtn = "&nbsp;&nbsp;<a href='" + baseURL + "test/stressFile/downloadFile/" + row.fileId + "' class='btn btn-primary'><i class='fa fa-download'></i>&nbsp;编辑</a>";
                     var downloadFileBtn = "&nbsp;&nbsp;<a href='" + baseURL + "test/stressFile/downloadFile/" + row.fileId + "' class='btn btn-primary'><i class='fa fa-download'></i>&nbsp;下载</a>";
-                    return btn + downloadFileBtn;
+                    return btn +downloadFileBtn;
                 }
             }
         ],
@@ -138,10 +140,12 @@ var vm = new Vue({
         q: {
             caseId: null
         },
+        stressTestFileConf: {},
         stressTestFile: {},
         title: null,
-        showChart: false,
         showList: true,
+        showUpdate: false,
+        showChart: false,
         showEdit: false
     },
     methods: {
@@ -158,6 +162,7 @@ var vm = new Vue({
             }
 
             vm.showList = false;
+            vm.showUpdate= false;
             vm.showChart = false;
             vm.showEdit = true;
             vm.title = "配置";
@@ -174,6 +179,39 @@ var vm = new Vue({
                 });
             }
         },
+        reSet: function () {
+            var fileId = getSelectedRow();
+            if (fileId == null) {
+                return;
+            }
+
+            $.get(baseURL + "test/stressFile/paramInfo/" + fileId, function (r) {
+                vm.showUpdate = true;
+                vm.showList = false;
+                vm.showEdit= false;
+                vm.showUpload = false;
+                vm.title = "设置并发数";
+                // r.stressTestFileConf 必须与controller中返回的put名称一致
+                vm.stressTestFileConf = r.stressTestFileConf;
+            });
+        },
+        reSetSence: function () {
+            var url = "test/stressFile/updateScene";
+            $.ajax({
+                type: "POST",
+                url: baseURL + url,
+                contentType: "application/json",
+                data: JSON.stringify(vm.stressTestFileConf),
+                success: function (r) {
+                    if (r.code == 0) {
+                        vm.reload();
+                    } else {
+                        alert(r.msg);
+                    }
+                }
+            });
+        },
+
         saveOrUpdate: function () {
             var url = (vm.stressTestFile.fileId == null && vm.stressTestFile.fileIdList == null)
                 ? "test/stressFile/save" : "test/stressFile/update";
@@ -257,6 +295,7 @@ var vm = new Vue({
             });
         },
         reload: function (event) {
+            vm.showUpdate= false;
             vm.showChart = false;
             vm.showList = true;
             vm.showEdit = false;
@@ -409,6 +448,7 @@ function startInterval(fileId) {
 
 function ShowRunning(fileId) {
     vm.showChart = true;
+    vm.showUpdate = false;
     vm.showEdit = false;
     vm.showList = false;
     startInterval(fileId);
@@ -486,6 +526,7 @@ function getOption(map, legendData, dataObj, areaStyle) {
 }
 
 setEChartSize();
+// console.log(document.getElementById('responseTimesChart'))
 var responseTimesEChart = echarts.init(document.getElementById('responseTimesChart'), 'shine');
 var throughputEChart = echarts.init(document.getElementById('throughputChart'), 'shine');
 var networkSentEChart = echarts.init(document.getElementById('networkSentChart'), 'shine');

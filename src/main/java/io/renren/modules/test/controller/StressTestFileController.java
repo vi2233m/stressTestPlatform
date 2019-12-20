@@ -5,6 +5,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 import io.renren.common.utils.R;
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.test.entity.StressTestFileConfEntity;
 import io.renren.modules.test.entity.StressTestFileEntity;
 import io.renren.modules.test.jmeter.JmeterStatEntity;
 import io.renren.modules.test.service.StressTestFileService;
@@ -55,6 +56,29 @@ public class StressTestFileController {
     public R info(@PathVariable("fileId") Long fileId){
         StressTestFileEntity stressTestFile = stressTestFileService.queryObject(fileId);
         return R.ok().put("stressTestFile", stressTestFile);
+    }
+
+    /**
+     * 查询脚本文件中的运行参数
+     */
+    @RequestMapping("/paramInfo/{fileId}")
+    public R paramInfo(@PathVariable("fileId") Long fileId){
+        StressTestFileConfEntity stressTestFileConfEntity = stressTestFileService.getJmeterRunParams(fileId);
+        return R.ok().put("stressTestFileConf", stressTestFileConfEntity);
+    }
+
+    /**
+     * 更改线程组测试场景
+     */
+    @SysLog("更改线程组测试场景")
+    @RequestMapping("/updateScene")
+//    @RequiresPermissions("test:stress:fileUpdate")
+    public R updateScene(@RequestBody StressTestFileConfEntity stressTestFileConfEntity) {
+        ValidatorUtils.validateEntity(stressTestFileConfEntity);
+
+        stressTestFileService.UpdateJmeterRunParams(stressTestFileConfEntity);
+
+        return R.ok();
     }
 
     /**

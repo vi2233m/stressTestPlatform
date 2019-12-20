@@ -1,6 +1,7 @@
 package io.renren.modules.test.service;
 
 import io.renren.modules.test.entity.StressTestEntity;
+import io.renren.modules.test.entity.StressTestFileConfEntity;
 import io.renren.modules.test.entity.StressTestFileEntity;
 import io.renren.modules.test.entity.StressTestReportsEntity;
 import io.renren.modules.test.jmeter.JmeterRunEntity;
@@ -109,5 +110,15 @@ public interface StressTestFileService {
      * 相同进程内执行的脚本，可以使用这个方法停止
      */
     void stopLocal(Long fileId, JmeterRunEntity jmeterRunEntity);
+
+    /**
+     * 获取 jmeter脚本中线程组设置的运行参数，如并发数，迭代次数等.
+     */
+    StressTestFileConfEntity getJmeterRunParams(Long fileId);
+
+    /**
+     * 更新 jmeter脚本中线程组设置的运行参数，如并发数，迭代次数等.
+     */
+    void UpdateJmeterRunParams(StressTestFileConfEntity stressTestFileConf);
 
 }
