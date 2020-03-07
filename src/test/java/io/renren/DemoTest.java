@@ -33,7 +33,7 @@ public class DemoTest {
     public void test1(){
         stressTestFileConf.setFileId(9L);
         stressTestFileConf.setOnSampleError("continue");
-        stressTestFileConf.setNumThreads("1000");
+        stressTestFileConf.setNumThreads(1000L);
         stressTestFileConf.setRampTime("1000");
         stressTestFileConf.setDelay("2000");
 //        stressTestFileConf.setLoops("");

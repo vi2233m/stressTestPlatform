@@ -44,7 +44,7 @@
     <div v-show="showUpdate" class="panel panel-default">
         <div class="panel-heading">{{title}}</div>
         <form class="form-horizontal">
-            <div class="form-group">
+            <div class="form-group-divv">
                 <div class="form-group">
                     <div class="col-sm-2 control-label">线程数</div>
                     <div class="col-sm-10">
@@ -57,36 +57,40 @@
                         <input type="text" class="form-control" v-model="stressTestFileConf.rampTime" placeholder="全部线程启动时间"/>
                     </div>
                 </div>
+            </div>
+            <div class="form-group-divv">
                 <div class="form-group">
-                    <div class="col-sm-2 control-label">循环次数（永远？）</div>
+                    <div class="col-sm-2 control-label">持续运行</div>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" v-model="stressTestFileConf.continueForever" placeholder="持续运行"/>
+                        <input type="checkbox" v-model="stressTestFileConf.continueForever"/>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" v-show="!stressTestFileConf.continueForever">
                     <div class="col-sm-2 control-label">循环次数</div>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" v-model="stressTestFileConf.loops" placeholder="循环次数"/>
                     </div>
                 </div>
+            </div>
+            <div class="form-group-divv">
                 <div class="form-group">
                     <div class="col-sm-2 control-label">调度器</div>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" v-model="stressTestFileConf.scheduler" placeholder="调度器"/>
+                        <input type="checkbox" v-model="stressTestFileConf.scheduler"/>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="form-group">
-                    <div class="col-sm-2 control-label">持续时间（秒）</div>
-                    <div class="col-sm-10">
-                        <input class="form-control" v-model="stressTestFileConf.duration" placeholder="持续时间"/>
+                <div class="form-group" v-show="stressTestFileConf.scheduler">
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">持续时间（秒）</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="stressTestFileConf.duration" placeholder="持续时间"/>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2 control-label">启动延迟（秒）</div>
-                    <div class="col-sm-10">
-                        <input class="form-control" v-model="stressTestFileConf.delay"  placeholder="启动延迟"/>
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">启动延迟（秒）</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="stressTestFileConf.delay"  placeholder="启动延迟"/>
+                        </div>
                     </div>
                 </div>
             </div>

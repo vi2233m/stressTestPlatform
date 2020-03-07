@@ -72,7 +72,7 @@ public class StressTestFileController {
      */
     @SysLog("更改线程组测试场景")
     @RequestMapping("/updateScene")
-//    @RequiresPermissions("test:stress:fileUpdate")
+    @RequiresPermissions("test:stress:updateScene")
     public R updateScene(@RequestBody StressTestFileConfEntity stressTestFileConfEntity) {
         ValidatorUtils.validateEntity(stressTestFileConfEntity);
 

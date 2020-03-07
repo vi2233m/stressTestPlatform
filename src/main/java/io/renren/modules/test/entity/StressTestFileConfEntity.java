@@ -15,12 +15,12 @@ public class StressTestFileConfEntity implements Serializable{
     private Long fileId; //脚本文件id
     private String onSampleError; //失败是否继续，默认continue
 
-    private String numThreads; // 线程数，并发数
+    private Long numThreads; // 线程数，并发数
     private String rampTime; // 所有线程在几秒内启动完成
-    private String continueForever; //循环次数是否永远，默认 false
+    private boolean continueForever; //循环次数是否永远，默认 false
     private String loops; //循环次数，跟 continueForever 关联，continueForever为 true时，则必须填写次数
 
-    private String scheduler; //  是否勾选调度器， 默认 false(不勾)
+    private boolean scheduler; //  是否勾选调度器， 默认 false(不勾)
     private String duration; // 持续时间（s）
     private String delay; // 启动延时时间（s）,点击启动后延时多久运行
 
@@ -44,11 +44,11 @@ public class StressTestFileConfEntity implements Serializable{
         this.onSampleError = onSampleError;
     }
 
-    public String getNumThreads() {
+    public Long getNumThreads() {
         return numThreads;
     }
 
-    public void setNumThreads(String numThreads) {
+    public void setNumThreads(Long numThreads) {
         this.numThreads = numThreads;
     }
 
@@ -60,11 +60,11 @@ public class StressTestFileConfEntity implements Serializable{
         this.rampTime = rampTime;
     }
 
-    public String getContinueForever() {
+    public boolean getContinueForever() {
         return continueForever;
     }
 
-    public void setContinueForever(String continueForever) {
+    public void setContinueForever(boolean continueForever) {
         this.continueForever = continueForever;
     }
 
@@ -76,11 +76,11 @@ public class StressTestFileConfEntity implements Serializable{
         this.loops = loops;
     }
 
-    public String getScheduler() {
+    public boolean getScheduler() {
         return scheduler;
     }
 
-    public void setScheduler(String scheduler) {
+    public void setScheduler(boolean scheduler) {
         this.scheduler = scheduler;
     }
 
