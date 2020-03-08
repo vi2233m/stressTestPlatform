@@ -5,7 +5,7 @@ $(function () {
         colModel: [
             {label: '文件ID', name: 'fileId', width: 30, key: true},
             // {label: '用例ID', name: 'caseId', width: 35},
-            {label: '用例名称', name: 'caseName', width: 35, sortable: false},
+            {label: '用例名称', name: 'caseName', width: 60, sortable: false},
             {
                 label: '文件名称',
                 name: 'originName',
@@ -19,7 +19,7 @@ $(function () {
                         "ShowRunning(" + row.fileId + ")'>" + value + "</a>";
                 }
             },
-            {label: '添加时间', name: 'addTime', width: 70},
+            {label: '添加时间', name: 'addTime', width: 80},
             // 当前不做更新时间，页面复杂性价比不高。
             // { label: '更新时间', name: 'updateTime', width: 80 }
             {
@@ -87,11 +87,11 @@ $(function () {
                 }
             },
             {
-                label: '执行操作', name: '', width: 115, sortable: false, formatter: function (value, options, row) {
+                label: '执行操作', name: '', width: 80, sortable: false, formatter: function (value, options, row) {
                     var btn = '';
                     // var editBtn = '';
                     if (!(getExtension(row.originName) && /^(jmx)$/.test(getExtension(row.originName).toLowerCase()))) {
-                        btn = "<a href='#' class='btn btn-primary' onclick='synchronizeFile(" + row.fileId + ")' ><i class='fa fa-arrow-circle-right'></i>&nbsp;同步文件</a>";
+                        btn = "<a href='#' class='btn btn-primary' onclick='synchronizeFile(" + row.fileId + ")' ><i class='fa fa-arrow-circle-right'></i>&nbsp;同步</a>";
                     } else {
                         if (row.status == 1) {
                             btn = "<a href='#' class='btn btn-danger' onclick='stopOnce(" + row.fileId + ")' ><i class='fa fa-stop-circle'></i>&nbsp;停止</a>";
@@ -134,13 +134,14 @@ $(function () {
     });
 });
 
-var vm = new Vue({
+var vm;
+vm = new Vue({
     el: '#rrapp',
     data: {
         q: {
             caseId: null
         },
-        stressTestFileConf: {},
+        stressTestFileConfs: [],
         stressTestFile: {},
         title: null,
         showList: true,
@@ -162,7 +163,7 @@ var vm = new Vue({
             }
 
             vm.showList = false;
-            vm.showUpdate= false;
+            vm.showUpdate = false;
             vm.showChart = false;
             vm.showEdit = true;
             vm.title = "配置";
@@ -188,11 +189,11 @@ var vm = new Vue({
             $.get(baseURL + "test/stressFile/paramInfo/" + fileId, function (r) {
                 vm.showUpdate = true;
                 vm.showList = false;
-                vm.showEdit= false;
+                vm.showEdit = false;
                 vm.showUpload = false;
-                vm.title = "设置并发数";
+                vm.title = "场景设置";
                 // r.stressTestFileConf 必须与controller中返回的put名称一致
-                vm.stressTestFileConf = r.stressTestFileConf;
+                vm.stressTestFileConfs = r.stressTestFileConf;
             });
         },
         reSetSence: function () {
@@ -201,7 +202,7 @@ var vm = new Vue({
                 type: "POST",
                 url: baseURL + url,
                 contentType: "application/json",
-                data: JSON.stringify(vm.stressTestFileConf),
+                data: JSON.stringify(vm.stressTestFileConfs),
                 success: function (r) {
                     if (r.code == 0) {
                         vm.reload();
@@ -295,7 +296,7 @@ var vm = new Vue({
             });
         },
         reload: function (event) {
-            vm.showUpdate= false;
+            vm.showUpdate = false;
             vm.showChart = false;
             vm.showList = true;
             vm.showEdit = false;

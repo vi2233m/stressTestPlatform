@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,8 +64,8 @@ public class StressTestFileController {
      */
     @RequestMapping("/paramInfo/{fileId}")
     public R paramInfo(@PathVariable("fileId") Long fileId){
-        StressTestFileConfEntity stressTestFileConfEntity = stressTestFileService.getJmeterRunParams(fileId);
-        return R.ok().put("stressTestFileConf", stressTestFileConfEntity);
+        List<StressTestFileConfEntity> listEntiry = stressTestFileService.getJmeterRunParams(fileId);
+        return R.ok().put("stressTestFileConf", listEntiry);
     }
 
     /**
@@ -73,10 +74,10 @@ public class StressTestFileController {
     @SysLog("更改线程组测试场景")
     @RequestMapping("/updateScene")
     @RequiresPermissions("test:stress:updateScene")
-    public R updateScene(@RequestBody StressTestFileConfEntity stressTestFileConfEntity) {
-        ValidatorUtils.validateEntity(stressTestFileConfEntity);
+    public R updateScene(@RequestBody List<StressTestFileConfEntity> listEntity) {
+        ValidatorUtils.validateEntity(listEntity);
 
-        stressTestFileService.UpdateJmeterRunParams(stressTestFileConfEntity);
+        stressTestFileService.UpdateJmeterRunParams(listEntity);
 
         return R.ok();
     }

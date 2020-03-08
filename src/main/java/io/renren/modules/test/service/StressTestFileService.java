@@ -114,11 +114,11 @@ public interface StressTestFileService {
     /**
      * 获取 jmeter脚本中线程组设置的运行参数，如并发数，迭代次数等.
      */
-    StressTestFileConfEntity getJmeterRunParams(Long fileId);
+    List<StressTestFileConfEntity> getJmeterRunParams(Long fileId);
 
     /**
      * 更新 jmeter脚本中线程组设置的运行参数，如并发数，迭代次数等.
      */
-    void UpdateJmeterRunParams(StressTestFileConfEntity stressTestFileConf);
+    void UpdateJmeterRunParams(List<StressTestFileConfEntity> listEntity);
 
 }

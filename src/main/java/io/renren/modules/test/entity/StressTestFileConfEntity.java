@@ -13,6 +13,9 @@ public class StressTestFileConfEntity implements Serializable{
     private static final long serialVersionUID = 1L;
 
     private Long fileId; //脚本文件id
+    private String threadGroupName; //线程组名称
+    private boolean threadEnabled; // 线程组是否禁用
+    private boolean putThread; // 线程组是否需要设置，默认false
     private String onSampleError; //失败是否继续，默认continue
 
     private Long numThreads; // 线程数，并发数
@@ -23,6 +26,38 @@ public class StressTestFileConfEntity implements Serializable{
     private boolean scheduler; //  是否勾选调度器， 默认 false(不勾)
     private String duration; // 持续时间（s）
     private String delay; // 启动延时时间（s）,点击启动后延时多久运行
+
+    public String getThreadGroupName() {
+        return threadGroupName;
+    }
+
+    public void setThreadGroupName(String threadGroupName) {
+        this.threadGroupName = threadGroupName;
+    }
+
+    public boolean isThreadEnabled() {
+        return threadEnabled;
+    }
+
+    public void setThreadEnabled(boolean threadEnabled) {
+        this.threadEnabled = threadEnabled;
+    }
+
+    public boolean isContinueForever() {
+        return continueForever;
+    }
+
+    public boolean isScheduler() {
+        return scheduler;
+    }
+
+    public boolean isPutThread() {
+        return putThread;
+    }
+
+    public void setPutThread(boolean putThread) {
+        this.putThread = putThread;
+    }
 
     public Long getFileId() {
         return fileId;
@@ -60,9 +95,9 @@ public class StressTestFileConfEntity implements Serializable{
         this.rampTime = rampTime;
     }
 
-    public boolean getContinueForever() {
-        return continueForever;
-    }
+//    public boolean getContinueForever() {
+//        return continueForever;
+//    }
 
     public void setContinueForever(boolean continueForever) {
         this.continueForever = continueForever;
@@ -76,9 +111,9 @@ public class StressTestFileConfEntity implements Serializable{
         this.loops = loops;
     }
 
-    public boolean getScheduler() {
-        return scheduler;
-    }
+//    public boolean getScheduler() {
+//        return scheduler;
+//    }
 
     public void setScheduler(boolean scheduler) {
         this.scheduler = scheduler;

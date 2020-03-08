@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.NodeList;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -987,8 +988,7 @@ public class StressTestFileServiceImpl implements StressTestFileService {
      * @return
      */
     @Override
-    public StressTestFileConfEntity getJmeterRunParams(Long filedId){
-
+    public List<StressTestFileConfEntity> getJmeterRunParams(Long filedId){
         // http://www.51gjie.com/java/748.html
         Document doc = null;
         String filePath = getFilePath( queryObject(filedId));
@@ -998,79 +998,87 @@ public class StressTestFileServiceImpl implements StressTestFileService {
         } catch (DocumentException e) {
             logger.error("读取jmeter脚本文件失败！", e.getStackTrace());
         }
-        stressTestFileConfEntity.setFileId(filedId);
-        stressTestFileConfEntity.setOnSampleError(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.on_sample_error']")).getStringValue());
-        if(((Element) doc.selectSingleNode("//*[@name='LoopController.continue_forever']")).getStringValue().equals("true")) {
-            stressTestFileConfEntity.setContinueForever(true);
-        }else {
-            stressTestFileConfEntity.setContinueForever(false);
-        }
-        stressTestFileConfEntity.setLoops(((Element) doc.selectSingleNode("//*[@name='LoopController.loops']")).getStringValue());
-//        stressTestFileConfEntity.setNumThreads(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.num_threads']")).getStringValue());
-        stressTestFileConfEntity.setNumThreads(Long.parseLong(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.num_threads']")).getStringValue()));
-        stressTestFileConfEntity.setRampTime(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.ramp_time']")).getStringValue());
-        if(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.scheduler']")).getStringValue().equals("true")) {
-            stressTestFileConfEntity.setScheduler(true);
-        }else {
-            stressTestFileConfEntity.setScheduler(false);
-        }
-        stressTestFileConfEntity.setDuration(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.duration']")).getStringValue());
-        stressTestFileConfEntity.setDelay(((Element) doc.selectSingleNode("//*[@name='ThreadGroup.delay']")).getStringValue());
 
-        return stressTestFileConfEntity;
+        Element root = doc.getRootElement();
+        List<Node> nodes =  root.selectNodes("//*[@testclass='ThreadGroup']");
+        List<StressTestFileConfEntity> listEntity = new ArrayList<>();
+        for (Node node : nodes){
+            StressTestFileConfEntity entity = new StressTestFileConfEntity();
+            listEntity.add(setEntity(entity, filedId, node));
+        }
+        return listEntity;
+    }
+
+    /**
+     * 设置实体
+     * @param entity
+     * @param filedId
+     * @param node
+     * @return
+     */
+    public StressTestFileConfEntity setEntity(StressTestFileConfEntity entity, Long filedId, Node node){
+        // node 查找字符串
+        String strThreadGroupName = "testname";
+        String strOnSampleError = "stringProp[@name='ThreadGroup.on_sample_error']";
+        String strLoops = "elementProp/*[@name='LoopController.loops']";
+        String strNumThreads = "stringProp[@name='ThreadGroup.num_threads']";
+        String strRampTime = "stringProp[@name='ThreadGroup.ramp_time']";
+        String strDuration = "stringProp[@name='ThreadGroup.duration']";
+        String strDelay = "stringProp[@name='ThreadGroup.delay']";
+        String strContinueForever = "elementProp/*[@name='LoopController.continue_forever']";
+        String strScheduler = "boolProp[@name='ThreadGroup.scheduler']";
+
+        entity.setFileId(filedId);
+        entity.setPutThread(false);
+        entity.setThreadGroupName(((Element) node).attributeValue(strThreadGroupName));
+        entity.setOnSampleError(((Element) node).selectSingleNode(strOnSampleError).getStringValue());
+        entity.setLoops(((Element) node).selectSingleNode(strLoops).getStringValue());
+        entity.setNumThreads(Long.parseLong(((Element) node).selectSingleNode(strNumThreads).getStringValue()));
+        entity.setRampTime(((Element) node).selectSingleNode(strRampTime).getStringValue());
+        entity.setDuration(((Element) node).selectSingleNode(strDuration).getStringValue());
+        entity.setDelay(((Element) node).selectSingleNode(strDelay).getStringValue());
+        // 线程组是否禁用
+        if(((Element) node).attribute("enabled").getValue().equals("true")){
+            entity.setThreadEnabled(true);
+        }else {
+            entity.setThreadEnabled(false);
+        }
+        // 是否开启永远循环
+        if(((Element) node).selectSingleNode(strContinueForever).getStringValue().equals("true")) {
+            entity.setContinueForever(true);
+        }else {
+            entity.setContinueForever(false);
+        }
+        // 是否使用调度器
+        if(((Element) node).selectSingleNode(strScheduler).getStringValue().equals("true")) {
+            entity.setScheduler(true);
+        }else {
+            entity.setScheduler(false);
+        }
+        return entity;
     }
 
     /**
      *  更新jmeter脚本并发数
-     * @param StressTestFileConf
+     * @param stressTestFileConfs
      */
     @Override
-    public void UpdateJmeterRunParams(StressTestFileConfEntity StressTestFileConf){
-
+    public void UpdateJmeterRunParams(List<StressTestFileConfEntity> stressTestFileConfs){
         //http://www.51gjie.com/java/745.html
         Document document = null;
-        String filePath = getFilePath( queryObject(StressTestFileConf.getFileId()));
+        String filePath = getFilePath( queryObject(stressTestFileConfs.get(0).getFileId()));
         System.out.println("filePath: " + filePath);
         try {
             document = new SAXReader().read(new File(filePath));
         } catch (DocumentException e) {
             logger.error("打开jmeter脚本文件失败！", e.getStackTrace());
         }
-        //读取并修改
-        if(StressTestFileConf.getOnSampleError() != null)
-            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.on_sample_error']")).setText(StressTestFileConf.getOnSampleError());
-        // 修改线程数
-        if(StressTestFileConf.getNumThreads() != null)
-            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.num_threads']")).setText(StressTestFileConf.getNumThreads().toString());
-        // 修改Ramp-Up时间
-        if(StressTestFileConf.getRampTime() != null)
-            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.ramp_time']")).setText(StressTestFileConf.getRampTime());
-        // 修改 是否 持续运行, 循环次数
-        if(StressTestFileConf.getContinueForever()) {
-            ((Element) document.selectSingleNode("//*[@name='LoopController.continue_forever']")).setText("true");
-            if(StressTestFileConf.getLoops() != null) {
-                ((Element) document.selectSingleNode("//*[@name='LoopController.loops']")).setText("-1");
-            }
-        }else {
-            ((Element) document.selectSingleNode("//*[@name='LoopController.continue_forever']")).setText("false");
-            ((Element) document.selectSingleNode("//*[@name='LoopController.loops']")).setText(StressTestFileConf.getLoops());
-            if("".equals(StressTestFileConf.getLoops()) || Integer.parseInt(StressTestFileConf.getLoops()) < 0){
-                ((Element) document.selectSingleNode("//*[@name='LoopController.continue_forever']")).setText("true");
-                ((Element) document.selectSingleNode("//*[@name='LoopController.loops']")).setText("-1");
-            }
+
+        Element root = document.getRootElement();
+        List<Node> nodes =  root.selectNodes("//*[@testclass='ThreadGroup']");
+        for (int i = 0; i < nodes.size(); ++i){
+            updateEntity(i, nodes, stressTestFileConfs);
         }
-        // 修改是否启动调度器
-        if(StressTestFileConf.getScheduler()) {
-            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.scheduler']")).setText("true");
-        }else {
-            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.scheduler']")).setText("false");
-        }
-        // 修改 持续时间
-        if(StressTestFileConf.getDuration() != null)
-            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.duration']")).setText(StressTestFileConf.getDuration());
-        // 修改 启动延迟时间
-        if(StressTestFileConf.getDelay() != null)
-            ((Element) document.selectSingleNode("//*[@name='ThreadGroup.delay']")).setText(StressTestFileConf.getDelay());
         //保存
         OutputStream os = null;
         XMLWriter writer =null;
@@ -1088,6 +1096,60 @@ public class StressTestFileServiceImpl implements StressTestFileService {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 更新脚本线程组设置
+     * @param i 第i个线程组
+     * @param nodes 脚本中的线程组list
+     * @param StressTestFileConfs 前端传进来的更新线程组实体list
+     */
+    public void updateEntity(int i, List<Node> nodes, List<StressTestFileConfEntity> StressTestFileConfs){
+        // node 查找字符串
+        String strOnSampleError = "stringProp[@name='ThreadGroup.on_sample_error']";
+        String strLoops = "elementProp/*[@name='LoopController.loops']";
+        String strNumThreads = "stringProp[@name='ThreadGroup.num_threads']";
+        String strRampTime = "stringProp[@name='ThreadGroup.ramp_time']";
+        String strDuration = "stringProp[@name='ThreadGroup.duration']";
+        String strDelay = "stringProp[@name='ThreadGroup.delay']";
+        String strContinueForever = "elementProp/*[@name='LoopController.continue_forever']";
+        String strScheduler = "boolProp[@name='ThreadGroup.scheduler']";
+
+        //读取并修改
+        if(StressTestFileConfs.get(i).getOnSampleError() != null)
+            ((Element) nodes.get(i).selectSingleNode(strOnSampleError)).setText(StressTestFileConfs.get(i).getOnSampleError());
+        // 修改线程数
+        if(StressTestFileConfs.get(i).getNumThreads() != null)
+            ((Element) nodes.get(i).selectSingleNode(strNumThreads)).setText(StressTestFileConfs.get(i).getNumThreads().toString());
+        // 修改Ramp-Up时间
+        if(StressTestFileConfs.get(i).getRampTime() != null)
+            ((Element) nodes.get(i).selectSingleNode(strRampTime)).setText(StressTestFileConfs.get(i).getRampTime());
+        // 修改 是否 持续运行, 循环次数
+        if(StressTestFileConfs.get(i).isContinueForever()) {
+            ((Element) nodes.get(i).selectSingleNode(strContinueForever)).setText("true");
+            if(StressTestFileConfs.get(i).getLoops() != null) {
+                ((Element) nodes.get(i).selectSingleNode(strLoops)).setText("-1");
+            }
+        }else {
+            ((Element) nodes.get(i).selectSingleNode(strContinueForever)).setText("false");
+            ((Element) nodes.get(i).selectSingleNode(strLoops)).setText(StressTestFileConfs.get(i).getLoops());
+            if("".equals(StressTestFileConfs.get(i).getLoops()) || Integer.parseInt(StressTestFileConfs.get(i).getLoops()) < 0){
+                ((Element) nodes.get(i).selectSingleNode(strContinueForever)).setText("true");
+                ((Element) nodes.get(i).selectSingleNode(strLoops)).setText("-1");
+            }
+        }
+        // 修改是否启动调度器
+        if(StressTestFileConfs.get(i).isScheduler()) {
+            ((Element) nodes.get(i).selectSingleNode(strScheduler)).setText("true");
+        }else {
+            ((Element) nodes.get(i).selectSingleNode(strScheduler)).setText("false");
+        }
+        // 修改 持续时间
+        if(StressTestFileConfs.get(i).getDuration() != null)
+            ((Element) nodes.get(i).selectSingleNode(strDuration)).setText(StressTestFileConfs.get(i).getDuration());
+        // 修改 启动延迟时间
+        if(StressTestFileConfs.get(i).getDelay() != null)
+            ((Element) nodes.get(i).selectSingleNode(strDelay)).setText(StressTestFileConfs.get(i).getDelay());
     }
 
 }
