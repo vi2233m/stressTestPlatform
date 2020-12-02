@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.test.dao.StressTestEnvironmentDao">
+
+    <select id="queryList" resultType="io.renren.modules.test.entity.StressTestEnvironmentEntity" >
+        select * from test_stress_environment
+        <where>
+            <if test="appName != null and appName.trim() != ''">
+                app_name like concat('%', #{appName}, '%')
+            </if>
+        </where>
+        <if test="sidx != null and sidx.trim() != ''">
+            order by ${sidx} ${order}
+        </if>
+        <if test="offset != null and limit != null ">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(1) from test_stress_environment
+        <where>
+            <if test="appName != null and appName.trim() != ''">
+                app_name like concat('%', #{appName}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

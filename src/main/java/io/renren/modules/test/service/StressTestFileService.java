@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * 性能测试压测文件
  */
-public interface StressTestFileService {
+public interface StressTestFileService{
 
     /**
      * 根据ID，查询文件

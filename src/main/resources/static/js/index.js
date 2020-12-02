@@ -99,6 +99,9 @@ var vm = new Vue({
                 }
             });
         },
+        reflush: function () {
+            parent.location.href ='index.html';
+        },
         donate: function () {
             layer.open({
                 type: 2,
