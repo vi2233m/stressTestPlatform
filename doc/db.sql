@@ -474,3 +474,39 @@ INSERT INTO `sys_config` (`id`, `key`, `value`, `status`, `remark`) VALUES ('6',
 
 -- 还没有完全实现的测试场景组装功能
 -- INSERT INTO `sys_menu` (`menu_id`, `parent_id`, `name`, `url`, `perms`, `type`, `icon`, `order_num`) VALUES ('37', '31', '测试场景组装', 'modules/test/stressTestAssembly.html', 'test:stress', '1', 'fa fa-clipboard', '6');
+
+-- 新增测试环境列表信息，关联服务器监控端口及路径
+CREATE TABLE `test_stress_environment` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(50) NOT NULL COMMENT 'ip地址',
+  `app_name` varchar(50) NOT NULL COMMENT '应用名称',
+  `home_dir` varchar(200) DEFAULT NULL COMMENT '安装路径',
+  `log_dir` varchar(200) DEFAULT NULL COMMENT 'log路径',
+  `cpu` int(11) DEFAULT NULL COMMENT 'cpu核数',
+  `mem` varchar(50) DEFAULT NULL COMMENT '内存',
+  `disk` varchar(50) DEFAULT NULL COMMENT '磁盘',
+  `add_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `add_by` bigint(20) DEFAULT NULL COMMENT '提交用户id',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `update_by` bigint(20) DEFAULT NULL COMMENT '修改用户id',
+  `port` int(11) DEFAULT '9999',
+  `report_path` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COMMENT='性能测试环境节点列表';
+
+-- 监控文件路径表
+CREATE TABLE `test_stress_monitor` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `report_id` bigint(20) NOT NULL COMMENT '测试报告id',
+  `app_name` varchar(50) NOT NULL COMMENT '应用名称',
+  `app_ip` varchar(50) NOT NULL COMMENT 'ip地址',
+  `status` varchar(50) DEFAULT NULL COMMENT '状态',
+  `add_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `add_by` bigint(20) DEFAULT NULL COMMENT '提交用户id',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `update_by` bigint(20) DEFAULT NULL COMMENT '修改用户id',
+  `monitor_path` varchar(200) DEFAULT NULL COMMENT '监控文件路径',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 COMMENT='报告监控文件路径表';
+-- 新增组合唯一索引
+alter table test_stress_monitor add unique index(report_id,app_name,monitor_path);
