@@ -31,13 +31,14 @@
                     class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
             <a v-if="hasPermission('test:stress')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
             <a v-if="hasPermission('test:stress')" class="btn btn-primary" @click="delCsv"><i class="fa fa-trash-o"></i>&nbsp;仅删除结果文件</a>
+            <a v-if="hasPermission('test:stress')" class="btn btn-primary" @click="showMonitor"><i class="fa fa-pencil-square-o"></i>&nbsp;查看资源监控</a>
             <!--&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="back" value="返回"/>-->
             &nbsp;&nbsp;<input type="button" class="btn btn-success" @click="reload" value="刷新"/>
         </div>
         <table id="jqGrid"></table>
         <div id="jqGridPager"></div>
     </div>
-    <div v-show="!showList" class="panel panel-default">
+    <div v-show="showEdit" class="panel panel-default">
         <div class="panel-heading">{{title}}</div>
         <form class="form-horizontal">
             <div class="form-group">
@@ -53,6 +54,16 @@
                 &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
             </div>
         </form>
+    </div>
+    <div v-show="showMonit" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <ol>
+            <li v-for="(item, index) in stressCaseReportMonitor">
+                &nbsp;&nbsp;应用名称：{{ item.appName }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                IP地址：{{ item.appIp}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a :href="item.monitorPath">监控记录</a>
+            </li>
+        </ol>
     </div>
 </div>
 

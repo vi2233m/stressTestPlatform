@@ -20,4 +20,19 @@ public interface StressTestEnvironmentService {
 	 */
 	int queryTotal(Map<String, Object> map);
 
+	/**
+	 * 启动选中服务器监控
+	 */
+	String startUp(List<StressTestEnvironmentEntity> environmentList);
+
+	/**
+	 * 监控服务文件名称路径落库
+	 */
+	void updateReportPath(StressTestEnvironmentEntity environmentEntity);
+
+	/**
+	 * 保存报告对应的监控记录
+	 */
+	String saveMonitor(List<StressTestEnvironmentEntity> environmentList);
+
 }

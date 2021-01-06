@@ -1,5 +1,6 @@
 package io.renren.modules.test.service;
 
+import io.renren.modules.test.entity.StressTestMonitorEntity;
 import io.renren.modules.test.entity.StressTestReportsEntity;
 import org.springframework.core.io.FileSystemResource;
 
@@ -61,6 +62,11 @@ public interface StressTestReportsService {
      * 批量删除测试报告的来源CSV文件
      */
     void deleteReportCSV(StressTestReportsEntity stressCaseReports);
+
+    /**
+     * 查询监控文件列表
+     */
+    List<StressTestMonitorEntity> queryList(Long reportId);
 
 
     FileSystemResource getZipFile(StressTestReportsEntity reportsEntity) throws IOException;

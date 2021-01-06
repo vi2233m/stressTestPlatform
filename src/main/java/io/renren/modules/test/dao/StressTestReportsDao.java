@@ -8,4 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface StressTestReportsDao extends BaseDao<StressTestReportsEntity> {
 
     int deleteBatchByCaseIds(Object[] id);
+
+    Long queryMaxId();
 }

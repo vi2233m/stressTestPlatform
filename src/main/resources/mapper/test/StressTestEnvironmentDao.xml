@@ -27,4 +27,20 @@
         </where>
     </select>
 
+    <select id="queryListForStart" resultType="io.renren.modules.test.entity.StressTestEnvironmentEntity" >
+        select * from test_stress_environment where ip in
+        <foreach item="appIps" collection="array" open="(" separator="," close=")">
+            #{appIps}
+        </foreach>
+    </select>
+
+    <update id="updateReportPath">
+        update test_stress_environment
+        <set>
+            <if test="reportPath != null">`report_path` = #{reportPath},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime},</if>
+        </set>
+        where ip = #{ip}
+    </update>
+
 </mapper>

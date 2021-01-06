@@ -3,13 +3,24 @@ $(function () {
         url: baseURL + 'test/stressEnv/list',
         datatype: "json",
         colModel: [
-            {label: 'IP地址', name: 'ip', width: 40, key: true},
-            {label: '应用名称', name: 'appName', width: 50, sortable: false},
-            {label: '部署路径', name: 'homeDir', width: 80, sortable: false},
-            {label: 'log路径', name: 'logDir', width: 60, sortable: false},
-            {label: 'CPU核数', name: 'cpu', width: 30, sortable: false},
-            {label: '内存（G）', name: 'mem', width: 30, sortable: false},
-            {label: '磁盘（G）', name: 'disk', width: 30, sortable: false}
+            {label: 'IP地址', name: 'ip', width: 30, key: true},
+            {label: '应用名称', name: 'appName', width: 30, sortable: false},
+            {label: '部署路径', name: 'homeDir', width: 50, sortable: false},
+            {label: 'log路径', name: 'logDir', width: 35, sortable: false},
+            {label: 'CPU核数', name: 'cpu', width: 20, sortable: false},
+            {label: '内存(G)', name: 'mem', width: 20, sortable: false},
+            {label: '磁盘(G)', name: 'disk', width: 20, sortable: false},
+            {label: '更新时间', name: 'updateTime', width: 40, sortable: false},
+            {
+                label: '资源监控',
+                name: '',
+                width: 25,
+                sortable: false, formatter: function (value, options, row) {
+                    var viewBtn;
+                    viewBtn = "&nbsp;&nbsp;<a href='" +"http://" + row.ip + ":" + row.port +"/report/" + row.reportPath + "' class='btn btn-primary'><i class='fa fa-arrow-circle-right'></i>&nbsp;查看</a>";
+                    return viewBtn;
+                }
+            }
         ],
         viewrecords: true,
         height: 385,
@@ -54,7 +65,52 @@ var vm = new Vue({
                 vm.reload();
             }
         },
-
+        startUp: function () {
+            var appIps = getSelectedRows();
+            if (appIps == null) {
+                return;
+            }
+            confirm('确定要启动监控选中的记录？', function () {
+                $.ajax({
+                    type: "POST",
+                    url: baseURL + "test/stressEnv/start",
+                    contentType: "application/json",
+                    data: JSON.stringify(appIps),
+                    success: function (r) {
+                        if (r.code == 0) {
+                            alert('操作成功', function () {
+                                vm.reload();
+                            });
+                        } else {
+                            alert(r.msg);
+                        }
+                    }
+                });
+            });
+        },
+        saveMonitor: function () {
+            var appIps = getSelectedRows();
+            if (appIps == null) {
+                return;
+            }
+            confirm('确定保存选中的监控记录结果？', function () {
+                $.ajax({
+                    type: "POST",
+                    url: baseURL + "test/stressEnv/saveMonitor",
+                    contentType: "application/json",
+                    data: JSON.stringify(appIps),
+                    success: function (r) {
+                        if (r.code == 0) {
+                            alert('操作成功', function () {
+                                vm.reload();
+                            });
+                        } else {
+                            alert(r.msg);
+                        }
+                    }
+                });
+            });
+        },
         reload: function (event) {
             vm.showList = true;
             var page = $("#jqGrid").jqGrid('getGridParam', 'page');

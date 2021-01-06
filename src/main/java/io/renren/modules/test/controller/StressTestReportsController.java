@@ -6,6 +6,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 import io.renren.common.utils.R;
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.test.entity.StressTestMonitorEntity;
 import io.renren.modules.test.entity.StressTestReportsEntity;
 import io.renren.modules.test.service.StressTestReportsService;
 import io.renren.modules.test.utils.StressTestUtils;
@@ -57,6 +58,16 @@ public class StressTestReportsController {
     public R info(@PathVariable("reportId") Long reportId) {
         StressTestReportsEntity reportsEntity = stressTestReportsService.queryObject(reportId);
         return R.ok().put("stressCaseReport", reportsEntity);
+    }
+
+    /**
+     * 查询测试报告对应监控信息
+     */
+    @RequestMapping("/monitor/{reportId}")
+    @RequiresPermissions("test:stress:reportMonitor")
+    public R monitor(@PathVariable("reportId") Long reportId) {
+        List<StressTestMonitorEntity> monitorEntity = stressTestReportsService.queryList(reportId);
+        return R.ok().put("stressCaseReportMonitor", monitorEntity);
     }
 
     /**

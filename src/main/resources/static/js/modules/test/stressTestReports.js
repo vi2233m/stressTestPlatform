@@ -79,7 +79,10 @@ var vm = new Vue({
             caseId: null
         },
         stressCaseReport: {},
+        stressCaseReportMonitor: [],
         title: null,
+        showEdit: false,
+        showMonit: false,
         showList: true
     },
     methods: {
@@ -111,6 +114,21 @@ var vm = new Vue({
                 }
             });
         },
+
+        showMonitor: function(){
+            var reportId = getSelectedRow();
+            if (reportId == null) {
+                return;
+            }
+
+            $.get(baseURL + "test/stressReports/monitor/" + reportId, function (r) {
+                vm.showMonit = true;
+                vm.showList = false;
+                vm.showEdit = false;
+                vm.title = "监控结果记录";
+                vm.stressCaseReportMonitor = r.stressCaseReportMonitor;
+            });
+        },
         // showError: function(logId) {
         // 	// 目前没有展示文件内容信息的需要。
         // 	$.get(baseURL + "test/stressFile/info/"+fileId, function(r){
@@ -129,6 +147,9 @@ var vm = new Vue({
 
             $.get(baseURL + "test/stressReports/info/" + reportId, function (r) {
                 vm.showList = false;
+                vm.showEdit = true;
+                vm.showMonit = false;
+
                 vm.title = "修改";
                 vm.stressCaseReport = r.stressCaseReport;
             });

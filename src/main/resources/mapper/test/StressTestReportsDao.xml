@@ -3,6 +3,10 @@
 
 <mapper namespace="io.renren.modules.test.dao.StressTestReportsDao">
 
+    <select id="queryMaxId" resultType="Long" >
+        select MAX(report_id) from test_stress_case_reports
+    </select>
+
     <select id="queryObject" resultType="io.renren.modules.test.entity.StressTestReportsEntity" >
         select * from test_stress_case_reports where report_id = #{value}
     </select>

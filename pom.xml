@@ -36,7 +36,6 @@
         <swagger.version>2.2.2</swagger.version>
         <jmeter.version>4.0</jmeter.version>
         <dom4j.version>1.6.1</dom4j.version>
-
         <!--&lt;!&ndash;wagon plugin 配置&ndash;&gt;-->
         <!--<service-path>/work/renren</service-path>-->
         <!--<pack-name>${artifactId}-${version}.jar</pack-name>-->

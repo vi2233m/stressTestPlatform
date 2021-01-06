@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by zyanycall@gmail.com on 15:24.
+ * 性能测试环境列表及监控
  */
 public class StressTestEnvironmentEntity implements Serializable {
 
@@ -76,15 +76,25 @@ public class StressTestEnvironmentEntity implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 资源监控端口
+     */
+    private Integer port;
+
+    /**
+     * 资源监控报告文件路径
+     */
+    private String reportPath;
+
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
-    public Long getId() {
+    public Long getSlaveId() {
         return slaveId;
     }
 
-    public void setId(Long slaveId) {
+    public void setSlaveId(Long slaveId) {
         this.slaveId = slaveId;
     }
 
@@ -176,10 +186,26 @@ public class StressTestEnvironmentEntity implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public String getReportPath() {
+        return reportPath;
+    }
+
+    public void setReportPath(String reportPath) {
+        this.reportPath = reportPath;
+    }
+
     @Override
     public String toString() {
         return "StressTestEnvironmentEntity{" +
-                "id=" + slaveId +
+                "slaveId=" + slaveId +
                 ", ip='" + ip + '\'' +
                 ", appName='" + appName + '\'' +
                 ", homeDir='" + homeDir + '\'' +
@@ -191,6 +217,8 @@ public class StressTestEnvironmentEntity implements Serializable {
                 ", updateBy='" + updateBy + '\'' +
                 ", addTime=" + addTime +
                 ", updateTime=" + updateTime +
+                ", port=" + port +
+                ", reportPath='" + reportPath + '\'' +
                 '}';
     }
 }

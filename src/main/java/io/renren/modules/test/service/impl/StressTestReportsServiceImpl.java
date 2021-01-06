@@ -1,7 +1,9 @@
 package io.renren.modules.test.service.impl;
 
 import io.renren.common.exception.RRException;
+import io.renren.modules.test.dao.StressTestMonitorDao;
 import io.renren.modules.test.dao.StressTestReportsDao;
+import io.renren.modules.test.entity.StressTestMonitorEntity;
 import io.renren.modules.test.entity.StressTestReportsEntity;
 import io.renren.modules.test.handler.ReportCreateResultHandler;
 import io.renren.modules.test.jmeter.report.LocalReportGenerator;
@@ -42,6 +44,9 @@ public class StressTestReportsServiceImpl implements StressTestReportsService {
     private StressTestReportsDao stressTestReportsDao;
 
     @Autowired
+    private StressTestMonitorDao stressTestMonitorDao;
+
+    @Autowired
     private StressTestUtils stressTestUtils;
 
     @Override
@@ -52,6 +57,11 @@ public class StressTestReportsServiceImpl implements StressTestReportsService {
     @Override
     public List<StressTestReportsEntity> queryList(Map<String, Object> map) {
         return stressTestReportsDao.queryList(map);
+    }
+
+    @Override
+    public List<StressTestMonitorEntity> queryList(Long reportId) {
+        return stressTestMonitorDao.queryList(reportId);
     }
 
     @Override

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.test.dao.StressTestMonitorDao">
+
+    <insert id="save" parameterType="io.renren.modules.test.entity.StressTestMonitorEntity" useGeneratedKeys="true" keyProperty="monitorId">
+        insert into test_stress_monitor
+        (
+        `report_id`,
+        `app_name`,
+        `app_ip`,
+        `status`,
+        `add_time`,
+        `update_time`,
+        `monitor_path`
+        )
+        values
+        (
+        #{reportId},
+        #{appName},
+        #{appIp},
+        #{status},
+        #{addTime},
+        #{updateTime},
+        #{monitorPath}
+        )
+    </insert>
+
+    <select id="queryList" resultType="io.renren.modules.test.entity.StressTestMonitorEntity" >
+        select * from test_stress_monitor where report_id = #{value}
+    </select>
+
+    <select id="queryTotal" parameterType="io.renren.modules.test.entity.StressTestMonitorEntity" resultType="int">
+        select count(1) from test_stress_monitor
+        <where>
+            <if test="reportId != null">
+                report_id = #{reportId}
+            </if>
+            <if test="appName != null and appName.trim() != ''">
+                and app_name = #{appName}
+            </if>
+            <if test="monitorPath != null and monitorPath.trim() != ''">
+                and monitor_path = #{monitorPath}
+            </if>
+        </where>
+    </select>
+
+</mapper>
