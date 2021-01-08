@@ -37,7 +37,8 @@ html { overflow-x:hidden; }
 	.ml-10 { margin-left:10px !important; }
 	.col-sm-10 {width: 70%;padding-left: 0px;}
 	.col-sm-2 {width: 24%;}
-    .col-sm-3 {width: 30%; font-weight:bold;font-size:120%; color: #0000FF}
+    .col-sm-3 {width: 30%; font-weight:bold;font-size:150%; color: #0000FF}
+    .col-sm-4 {width: 5%;}
 }
 tbody > tr > th {font-weight: normal; }
 .panel .table { margin:0 0; }

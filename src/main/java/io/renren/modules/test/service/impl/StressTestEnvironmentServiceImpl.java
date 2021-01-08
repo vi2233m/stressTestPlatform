@@ -122,7 +122,7 @@ public class StressTestEnvironmentServiceImpl implements StressTestEnvironmentSe
     }
 
     private String getRequestUrl(StressTestEnvironmentEntity environment){
-        return "http://" + environment.getIp() + ":" + environment.getPort() + "/start?n="+ environment.getIp() + "&t=5&f=10";
+        return "http://" + environment.getIp() + ":" + environment.getPort() + "/start?n="+ environment.getIp() + "&t=45&f=10";
     }
 
 }
