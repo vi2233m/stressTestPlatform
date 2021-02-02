@@ -509,7 +509,7 @@ function getOption(map, legendData, dataObj, areaStyle) {
                     name: runLabel,
                     type: 'line',
                     data: dataObj[runLabel]
-                }
+                };
                 if (areaStyle) {
                     item.stack = '总量';
                     item.itemStyle = {normal: {areaStyle: {type: 'default'}}};

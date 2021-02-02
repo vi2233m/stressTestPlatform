@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.test.dao.StressTestTendencyDao">
+
+    <select id="queryList" resultType="io.renren.modules.test.entity.StressTestTendencyEntity" >
+        select * from test_stress_case_tendency
+        <where>
+            is_actived = "Y" and is_deleted = "N"
+            <if test="fileId != null and fileId.trim() != ''">
+                and file_id = #{fileId}
+            </if>
+        </where>
+        <if test="sidx != null and sidx.trim() != ''">
+            order by ${sidx} ${order}
+        </if>
+        <if test="offset != null and limit != null ">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(1) from test_stress_case_tendency
+        <where>
+            is_actived = "Y" and is_deleted = "N"
+            <if test="fileId != null and fileId.trim() != ''">
+                and file_id  = #{fileId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryObject" resultType="io.renren.modules.test.entity.StressTestTendencyEntity" >
+        select * from test_stress_case_tendency where file_id = #{value} and is_actived = "Y" and is_deleted = "N"
+    </select>
+
+    <update id="update" parameterType="io.renren.modules.test.entity.StressTestTendencyEntity">
+        update test_stress_case_tendency
+        <set>
+            <if test="fileId != null">`file_id` = #{fileId}, </if>
+            <if test="fileName != null">`file_name` = #{fileName}, </if>
+            <if test="remark != null">`remark` = #{remark}, </if>
+            <if test="addTime != null">`add_time` = #{addTime}, </if>
+            <if test="addBy != null">`add_by` = #{addBy}, </if>
+            <if test="updateTime != null">`update_time` = #{updateTime}, </if>
+            <if test="updateBy != null">`update_by` = #{updateBy}, </if>
+            <if test="isActived != null">`is_actived` = #{isActived}, </if>
+            <if test="isDeleted != null">`is_deleted` = #{isDeleted} </if>
+        </set>
+        where file_id = #{fileId}
+    </update>
+
+    <insert id="save" parameterType="io.renren.modules.test.entity.StressTestTendencyEntity" useGeneratedKeys="true"
+            keyProperty="id">
+		insert into test_stress_case_tendency
+		(
+			`file_id`,
+			`file_name`,
+			`remark`,
+			`add_time`,
+			`update_time`
+		)
+		values
+		(
+			#{fileId},
+			#{fileName},
+			#{remark},
+			#{addTime},
+			#{updateTime}
+		)
+	</insert>
+
+</mapper>

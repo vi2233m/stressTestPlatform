@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.test.dao.StressTestHistoryReportDetailDao">
+
+    <select id="queryApiList" resultType="String" >
+        select api_name FROM test_stress_case_tendency_report_detail where file_id = #{value} and is_actived = "Y" and  is_deleted = "N" group by api_name
+    </select>
+
+    <select id="queryVersionList" resultType="String" >
+        select version FROM test_stress_case_tendency_report_detail where file_id = #{value} and is_actived = "Y" and  is_deleted = "N" group by version
+    </select>
+
+    <select id="queryListForApi" resultType="io.renren.modules.test.entity.StressTestHistoryReportDetailEntity" >
+        select * from test_stress_case_tendency_report_detail where file_id = #{fileId} and is_actived = "Y" and  is_deleted = "N" order by add_time
+    </select>
+
+    <select id="queryObject" resultType="io.renren.modules.test.entity.StressTestHistoryReportDetailEntity">
+		select * from test_stress_case_tendency_report_detail where id = #{value} and is_actived = "Y" and  is_deleted = "N"
+	</select>
+
+    <select id="queryObjectForDuplicate" resultType="io.renren.modules.test.entity.StressTestHistoryReportDetailEntity">
+		select * from test_stress_case_tendency_report_detail
+		  where version = #{version}
+		    and report_id = #{reportId}
+		    and file_id = #{fileId}
+		    and api_name = #{apiName}
+ 		    and is_actived = "Y"
+ 		    and  is_deleted = "N"
+	</select>
+
+    <select id="queryList" resultType="io.renren.modules.test.entity.StressTestHistoryReportDetailEntity">
+        select * from test_stress_case_tendency_report_detail
+        <where>
+            is_actived = "Y" and  is_deleted = "N"
+            <if test="fileId != null and fileId.trim() != ''">
+                and file_id = #{fileId}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by add_time desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null ">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(1) from test_stress_case_tendency_report_detail
+        <where>
+            is_actived = "Y" and  is_deleted = "N"
+            <if test="fileId != null and fileId.trim() != ''">
+                and file_id = #{fileId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" parameterType="io.renren.modules.test.entity.StressTestHistoryReportDetailEntity" useGeneratedKeys="true"
+            keyProperty="id">
+		insert into test_stress_case_tendency_report_detail
+		(
+			`version`,
+			`report_id`,
+			`file_id`,
+			`api_name`,
+			`error_pct`,
+			`average`,
+			`min`,
+			`max`,
+			`ninetieth_pct`,
+			`ninetyfive_pct`,
+			`ninetynine_pct`,
+			`tps`,
+			`received`,
+			`sent`,
+			`add_time`,
+			`update_time`
+		)
+		values
+		(
+			#{version},
+			#{reportId},
+			#{fileId},
+			#{apiName},
+			#{errorPct},
+			#{average},
+			#{min},
+			#{max},
+			#{ninetiethPct},
+			#{ninetyfivePct},
+			#{ninetyninePct},
+			#{tps},
+			#{received},
+			#{sent},
+			#{addTime},
+			#{updateTime}
+		)
+	</insert>
+
+    <update id="update" parameterType="io.renren.modules.test.entity.StressTestHistoryReportDetailEntity">
+        update test_stress_case_tendency_report_detail
+        <set>
+            <if test="version != null">`version` = #{version}, </if>
+            <if test="reportId != null">`report_id` = #{reportId}, </if>
+            <if test="fileId != null">`file_id` = #{fileId}, </if>
+            <if test="apiName != null">`api_name` = #{apiName}, </if>
+            <if test="errorPct != null">`error_pct` = #{errorPct}, </if>
+            <if test="average != null">`average` = #{average}, </if>
+            <if test="min != null">`min` = #{min}, </if>
+            <if test="max != null">`max` = #{max}, </if>
+            <if test="ninetiethPct != null">`ninetieth_pct` = #{ninetiethPct}, </if>
+            <if test="ninetyfivePct != null">`ninetyfive_pct` = #{ninetyfivePct}, </if>
+            <if test="ninetyninePct != null">`ninetynine_pct` = #{ninetyninePct}, </if>
+            <if test="tps != null">`tps` = #{tps}, </if>
+            <if test="received != null">`received` = #{received}, </if>
+            <if test="sent != null">`sent` = #{sent} </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="deleteBatch">
+        update test_stress_case_tendency_report_detail
+        set is_actived="N",is_deleted="Y"
+        where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </update>
+
+</mapper>

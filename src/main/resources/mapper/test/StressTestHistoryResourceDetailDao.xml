@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.test.dao.StressTestHistoryResourceDetailDao">
+
+    <select id="queryIpList" resultType="io.renren.modules.test.entity.StressTestHistoryResourceDetailEntity" >
+        SELECT app_ip,app_name FROM test_stress_case_tendency_resource_detail WHERE file_id= #{value} and is_actived = "Y" and  is_deleted = "N" GROUP BY app_ip,app_name
+    </select>
+
+    <select id="queryVersionList" resultType="String" >
+        select version FROM test_stress_case_tendency_resource_detail where file_id = #{value} and is_actived = "Y" and  is_deleted = "N" group by version
+    </select>
+
+    <select id="queryListForIp" resultType="io.renren.modules.test.entity.StressTestHistoryResourceDetailEntity" >
+        SELECT * FROM test_stress_case_tendency_resource_detail WHERE file_id = #{fileId} and is_actived = "Y" and  is_deleted = "N" ORDER BY add_time
+    </select>
+
+    <select id="queryObject" resultType="io.renren.modules.test.entity.StressTestHistoryResourceDetailEntity">
+		select * from test_stress_case_tendency_resource_detail where id = #{value} and is_actived = "Y" and  is_deleted = "N"
+	</select>
+
+    <select id="queryList" resultType="io.renren.modules.test.entity.StressTestHistoryResourceDetailEntity">
+        select * from test_stress_case_tendency_resource_detail
+        <where>
+            is_actived = "Y" and  is_deleted = "N"
+            <if test="fileId != null and fileId.trim() != ''">
+                and file_id = #{fileId}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by add_time desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null ">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(1) from test_stress_case_tendency_resource_detail
+        <where>
+            is_actived = "Y" and  is_deleted = "N"
+            <if test="fileId != null and fileId.trim() != ''">
+                and file_id = #{fileId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" parameterType="io.renren.modules.test.entity.StressTestHistoryResourceDetailEntity" useGeneratedKeys="true"
+            keyProperty="id">
+		insert into test_stress_case_tendency_resource_detail
+		(
+			`version`,
+			`report_id`,
+			`file_id`,
+			`app_name`,
+			`app_ip`,
+			`cpu_user`,
+			`cpu_sys`,
+			`cpu_wait`,
+			`mem_free`,
+			`net_read`,
+			`net_write`,
+			`disk_read`,
+			`disk_write`,
+			`add_time`,
+			`update_time`
+		)
+		values
+		(
+			#{version},
+			#{reportId},
+			#{fileId},
+			#{appName},
+			#{appIp},
+			#{cpuUser},
+			#{cpuSys},
+			#{cpuWait},
+			#{memFree},
+			#{netRead},
+			#{netWrite},
+			#{diskRead},
+			#{diskWrite},
+			#{addTime},
+			#{updateTime}
+		)
+	</insert>
+
+    <update id="update" parameterType="io.renren.modules.test.entity.StressTestHistoryResourceDetailEntity">
+        update test_stress_case_tendency_resource_detail
+        <set>
+            <if test="version != null">`version` = #{version}, </if>
+            <if test="reportId != null">`report_id` = #{reportId}, </if>
+            <if test="fileId != null">`file_id` = #{fileId}, </if>
+            <if test="appName != null">`app_name` = #{appName}, </if>
+            <if test="appIp != null">`app_ip` = #{appIp}, </if>
+            <if test="cpuUser != null">`cpu_user` = #{cpuUser}, </if>
+            <if test="cpuSys != null">`cpu_sys` = #{cpuSys}, </if>
+            <if test="cpuWait != null">`cpu_wait` = #{cpuWait}, </if>
+            <if test="memFree != null">`mem_free` = #{memFree}, </if>
+            <if test="netRead != null">`net_read` = #{netRead}, </if>
+            <if test="netWrite != null">`net_write` = #{netWrite}, </if>
+            <if test="diskRead != null">`disk_read` = #{diskRead}, </if>
+            <if test="diskWrite != null">`disk_write` = #{diskWrite} </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="deleteBatch">
+        update test_stress_case_tendency_resource_detail set is_actived="N",is_deleted="Y"
+        where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </update>
+
+    <select id="queryObjectForDuplicate" resultType="io.renren.modules.test.entity.StressTestHistoryResourceDetailEntity">
+		select * from test_stress_case_tendency_resource_detail
+		  where version = #{version}
+		    and report_id = #{reportId}
+		    and file_id = #{fileId}
+		    and app_name = #{appName}
+		    and app_ip = #{appIp}
+ 		    and is_actived = "Y"
+ 		    and  is_deleted = "N"
+	</select>
+
+</mapper>

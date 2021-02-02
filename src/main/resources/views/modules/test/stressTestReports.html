@@ -57,13 +57,18 @@
     </div>
     <div v-show="showMonit" class="panel panel-default">
         <div class="panel-heading">{{title}}</div>
-        <ol>
-            <li v-for="(item, index) in stressCaseReportMonitor">
-                &nbsp;&nbsp;应用名称：{{ item.appName }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                IP地址：{{ item.appIp}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <a :href="item.monitorPath">监控记录</a>
-            </li>
-        </ol>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <ol>
+                    <li v-for="(item, index) in stressCaseReportMonitor">
+                        &nbsp;&nbsp;应用名称：{{ item.appName }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        IP地址：{{ item.appIp}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a :href="item.monitorPath">监控记录</a>
+                    </li>
+                </ol>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
     </div>
 </div>
 
